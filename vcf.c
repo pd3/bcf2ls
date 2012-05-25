@@ -508,6 +508,11 @@ int vcf_parse1(kstring_t *s, const vcf_hdr_t *h, vcf1_t *v)
 			if (strcmp(p, ".")) vcf_enc_vchar(str, q - p, p);
 			else vcf_enc_size(str, 0, VCF_BT_CHAR);
 		} else if (i == 3) { // REF
+            if ( q-p>32767 )
+            {
+                fprintf(stderr, "[W::%s] The REF too long (%ld), skipping %s:%d\n", __func__, q-p, h->id[VCF_DT_CTG][v->rid].key,v->pos+1);
+                return 0;
+            }
 			vcf_enc_vchar(str, q - p, p);
 			v->n_allele = 1, v->rlen = q - p;
 		} else if (i == 4) { // ALT
